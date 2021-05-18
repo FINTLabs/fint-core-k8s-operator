@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-import static no.fintlabs.operator.repository.ClusterRepositoryFactory.getLabels;
+import static no.fintlabs.operator.repository.LabelHelper.getLabels;
 
 
 @Slf4j

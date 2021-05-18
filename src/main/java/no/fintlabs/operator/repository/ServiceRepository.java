@@ -1,33 +1,28 @@
 package no.fintlabs.operator.repository;
 
-import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.kubernetes.api.model.ServiceBuilder;
+import io.fabric8.kubernetes.api.model.ServicePort;
+import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.operator.configuration.AppConfiguration;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
 
-import static no.fintlabs.operator.repository.ClusterRepositoryFactory.getLabels;
+import static no.fintlabs.operator.repository.LabelHelper.getLabels;
 
 @Slf4j
 @Repository
-public class ClusterRepository {
+public class ServiceRepository {
 
     private final KubernetesClient client;
+    private final AppConfiguration configuration;
 
-    public ClusterRepository(KubernetesClient client, ApplicationContext context, AppConfiguration configuration) {
+    public ServiceRepository(KubernetesClient client, AppConfiguration configuration) {
         this.client = client;
-    }
-
-    public Namespace applyNamespace(String namespaceName) {
-        Namespace namespace = new NamespaceBuilder()
-                .withNewMetadata()
-                .withName(namespaceName)
-                .endMetadata()
-                .build();
-        return client.namespaces().withName(namespaceName).createOrReplace(namespace);
+        this.configuration = configuration;
     }
 
     public Service applyFintCoreConsumerService(String namespace, String stack) {
@@ -35,11 +30,11 @@ public class ClusterRepository {
                 .withNewMetadata()
                 .withAnnotations(Collections.singletonMap("service.beta.kubernetes.io/azure-load-balancer-internal", "true"))
                 .withLabels(getLabels(stack))
-                .withName("consumer-" + stack)
+                .withName(configuration.getConsumerName(stack))
                 .endMetadata()
                 .withNewSpec()
                 .withType("LoadBalancer")
-                .withPorts(new ServicePortBuilder().withName("8080").withPort(8080).build())
+                .withPorts(servicePort())
                 .withSelector(getLabels(stack))
                 .endSpec()
                 .build();
@@ -47,5 +42,10 @@ public class ClusterRepository {
         return client.services().inNamespace(namespace).createOrReplace(service);
     }
 
-
+    private ServicePort servicePort() {
+        return new ServicePortBuilder()
+                .withName(configuration.getPort().toString())
+                .withPort(configuration.getPort())
+                .build();
+    }
 }
