@@ -30,12 +30,12 @@ public class DeploymentRepository {
     public Deployment applyFintCoreConsumerDeployment(String namespace, String stack, String resourceSize, String path, String image) {
         Deployment deployment = new DeploymentBuilder()
                 .withNewMetadata()
-                .withName(configuration.getConsumerName(stack))
+                .withName(configuration.getDeployment().getName(stack))
                 .withLabels(getLabels(stack))
                 .withAnnotations(onePasswordAnnotations())
                 .endMetadata()
                 .withNewSpec()
-                .withReplicas(configuration.getReplicas())
+                .withReplicas(configuration.getDeployment().getReplicas())
                 .withSelector(new LabelSelectorBuilder().withMatchLabels(getLabels(stack)).build())
                 .withStrategy(getRollingUpdate())
                 .withNewTemplate()
@@ -47,7 +47,7 @@ public class DeploymentRepository {
                 .addNewContainer()
                 .withEnv(getConsumerEnvironmentVaribels(namespace, stack, path))
                 .withImage(image)
-                .withName(configuration.getConsumerName(stack))
+                .withName(configuration.getDeployment().getName(stack))
                 .withPorts(getContainerPorts())
                 .withNewReadinessProbe()
                 .withHttpGet(getHttpGetAction(path))
@@ -55,15 +55,15 @@ public class DeploymentRepository {
                 .withTimeoutSeconds(30)
                 .endReadinessProbe()
                 .withNewResources()
-                .withRequests(configuration.getResourceRequest().get(resourceSize))
-                .withLimits(configuration.getResourceLimit().get(resourceSize))
+                .withRequests(configuration.getDeployment().getResources().getRequest().get(resourceSize))
+                .withLimits(configuration.getDeployment().getResources().getLimit().get(resourceSize))
                 .endResources()
                 .withEnvFrom(
                         new EnvFromSourceBuilder()
                                 .withNewConfigMapRef("fint-environment", false)
                                 .build(),
                         new EnvFromSourceBuilder()
-                                .withNewSecretRef(configuration.getEventhubSecretName(), false)
+                                .withNewSecretRef(configuration.getDeployment().getSecret(), false)
                                 .build())
                 .endContainer()
                 .withRestartPolicy("Always")
@@ -78,20 +78,20 @@ public class DeploymentRepository {
     private HTTPGetAction getHttpGetAction(String path) {
         return new HTTPGetActionBuilder()
                 .withPath(path + "/health")
-                .withPort(new IntOrString(configuration.getPort()))
+                .withPort(new IntOrString(configuration.getDeployment().getPort()))
                 .build();
     }
 
     private List<ContainerPort> getContainerPorts() {
-        return Collections.singletonList(new ContainerPortBuilder().withContainerPort(configuration.getPort()).build());
+        return Collections.singletonList(new ContainerPortBuilder().withContainerPort(configuration.getDeployment().getPort()).build());
     }
 
     private DeploymentStrategy getRollingUpdate() {
         return new DeploymentStrategyBuilder()
                 .withType("RollingUpdate")
                 .withNewRollingUpdate()
-                .withMaxSurge(new IntOrString(configuration.getDeploymentStrategy().getMaxSurge()))
-                .withMaxUnavailable(new IntOrString(configuration.getDeploymentStrategy().getMaxUnavailable()))
+                .withMaxSurge(new IntOrString(configuration.getDeployment().getDeploymentStrategy().getMaxSurge()))
+                .withMaxUnavailable(new IntOrString(configuration.getDeployment().getDeploymentStrategy().getMaxUnavailable()))
                 .and()
                 .build();
     }
@@ -105,7 +105,7 @@ public class DeploymentRepository {
             add(new EnvVarBuilder().withName("server.context-path").withValue(path).build());
         }};
 
-        configuration.getCacheDisabledFor()
+        configuration.getDeployment().getCacheDisabledFor()
                 .stream()
                 .map(entity -> new EnvVarBuilder()
                         .withName("fint.consumer.cache.disabled." + entity)
@@ -120,7 +120,7 @@ public class DeploymentRepository {
     private Map<String, String> prometheusAnnotations(String path) {
         return new HashMap<>() {{
             put("prometheus.io/scrape", "true");
-            put("prometheus.io/port", configuration.getPort().toString());
+            put("prometheus.io/port", configuration.getDeployment().getPort().toString());
             put("prometheus.io/path", path);
         }};
     }
@@ -130,10 +130,10 @@ public class DeploymentRepository {
             put("operator.1password.io/item-path",
                     String.format(
                             "vaults/%s/items/%s",
-                            configuration.getOnePasswordVault(),
-                            configuration.getEventhubSecretName())
+                            configuration.getDeployment().getOnepasswordVault(),
+                            configuration.getDeployment().getSecret())
             );
-            put("operator.1password.io/item-name", configuration.getEventhubSecretName());
+            put("operator.1password.io/item-name", configuration.getDeployment().getSecret());
         }};
     }
 }

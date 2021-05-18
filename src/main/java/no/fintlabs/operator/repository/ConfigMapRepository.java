@@ -1,5 +1,6 @@
 package no.fintlabs.operator.repository;
 
+import io.fabric8.kubernetes.api.model.Quantity;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.operator.configuration.AppConfiguration;
@@ -26,7 +27,7 @@ public class ConfigMapRepository {
     }
 
     public void applyCoreEnvironmentConfig(String namespace) {
-        Resource resource = context.getResource(configuration.getEnvironmentUrl());
+        Resource resource = context.getResource(configuration.getConfigMap().getUrl());
         try {
             InputStream is = resource.getInputStream();
 

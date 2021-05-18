@@ -1,11 +1,42 @@
 fint:
   kubernetes:
     api-server: "https://aks-sandbox-fint-f3e77925.hcp.norwayeast.azmk8s.io:443"
-
-  garden-gnome:
-    environment-url: "https://raw.githubusercontent.com/FINTLabs/fint-kubernetes/master/core/sandbox/environment.yaml"
-    one-password-vault: "aks-sandbox-vault"
-    cache-disabled-for:
-      - person
-      - nisse
-      - bil
+    deployment:
+      name-template: ${fint.kubernetes.service.name-template}
+      port: ${fint.kubernetes.service.port}
+      onepassword-vault: aks-sandbox-vault
+      secret: fint-events-azure-eventhub
+      cache-disabled-for:
+        - person
+        - nisse
+        - bil
+      deployment-strategy:
+        max-surge: 1
+        max-unavailable: 0
+      replicas: 1
+      resources:
+        request:
+          small:
+            memory: "2Gi"
+            cpu: "250m"
+          medium:
+            memory: "5Gi"
+            cpu: "500m"
+          large:
+            memory: "10Gi"
+            cpu: "1"
+        limit:
+          small:
+            memory: "4Gi"
+            cpu: "1"
+          medium:
+            memory: "10Gi"
+            cpu: "2"
+          large:
+            memory: "15Gi"
+            cpu: "2"
+    service:
+      name-template: "consumer-%s"
+      port: 8080
+    config-map:
+      url: "https://raw.githubusercontent.com/FINTLabs/fint-kubernetes/master/core/sandbox/environment.yaml"
