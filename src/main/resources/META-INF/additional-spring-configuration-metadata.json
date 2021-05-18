@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "fint.kubernetes.api-server",
+      "type": "java.lang.String",
+      "description": "API server address for Kubernetes cluster."
+    },
+    {
+      "name": "fint.garden-gnome.cache-disabled-for",
+      "type": "java.lang.String",
+      "description": "Description for fint.garden-gnome.cache-disabled-for."
+    }
+  ] }

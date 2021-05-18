@@ -1,0 +1,11 @@
+fint:
+  kubernetes:
+    api-server: "https://aks-sandbox-fint-f3e77925.hcp.norwayeast.azmk8s.io:443"
+
+  garden-gnome:
+    environment-url: "https://raw.githubusercontent.com/FINTLabs/fint-kubernetes/master/core/sandbox/environment.yaml"
+    one-password-vault: "aks-sandbox-vault"
+    cache-disabled-for:
+      - person
+      - nisse
+      - bil
