@@ -8,7 +8,7 @@ import lombok.Setter;
 public class AbstractNameTemplateConfiguration {
     protected String nameTemplate;
 
-    public String getName(String stack) {
-        return String.format(nameTemplate, stack);
+    public String getName(String stack, String orgId) {
+        return String.format(nameTemplate, stack, orgId.replace('.', '-'));
     }
 }

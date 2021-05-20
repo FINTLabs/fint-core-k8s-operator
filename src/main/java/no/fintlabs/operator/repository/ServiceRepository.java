@@ -23,17 +23,17 @@ public class ServiceRepository {
         this.configuration = configuration;
     }
 
-    public Service applyFintCoreConsumerService(String namespace, String stack) {
+    public Service applyFintCoreConsumerService(String namespace, String stack, String orgId) {
         Service service = new ServiceBuilder()
                 .withNewMetadata()
                 //.withAnnotations(Collections.singletonMap("service.beta.kubernetes.io/azure-load-balancer-internal", "true"))
-                .withLabels(getLabels(stack))
-                .withName(configuration.getService().getName(stack))
+                .withLabels(getLabels(stack, orgId))
+                .withName(configuration.getService().getName(stack, orgId))
                 .endMetadata()
                 .withNewSpec()
                 .withType("ClusterIP")
                 .withPorts(servicePort())
-                .withSelector(getLabels(stack))
+                .withSelector(getLabels(stack, orgId))
                 .endSpec()
                 .build();
 

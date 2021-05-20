@@ -32,14 +32,14 @@ public class OperatorService {
         configMapRepository.applyCoreEnvironmentConfig("rogfk-no");
         onePasswordOperatorRepository.updateOnePasswordOperator("rogfk-no");
         namespaceRepository.applyNamespace("rogfk-no");
-        serviceRepository.applyFintCoreConsumerService("rogfk-no", "administrasjon-personal");
+        serviceRepository.applyFintCoreConsumerService("rogfk-no", "administrasjon-personal", "rogfk.no");
         deploymentRepository.applyFintCoreConsumerDeployment(
                 "rogfk-no",
                 "administrasjon-personal",
                 "small",
                 "/administrasjon/personal",
-                "fintlabsacr.azurecr.io/consumer-administrasjon-personal:3.8.0"
-        );
+                "fintlabsacr.azurecr.io/consumer-administrasjon-personal:3.8.0",
+                "rogfk.no");
     }
 
 

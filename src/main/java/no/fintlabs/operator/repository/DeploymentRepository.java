@@ -27,27 +27,27 @@ public class DeploymentRepository {
         this.configuration = configuration;
     }
 
-    public Deployment applyFintCoreConsumerDeployment(String namespace, String stack, String resourceSize, String path, String image) {
+    public Deployment applyFintCoreConsumerDeployment(String namespace, String stack, String resourceSize, String path, String image, String orgId) {
         Deployment deployment = new DeploymentBuilder()
                 .withNewMetadata()
-                .withName(configuration.getDeployment().getName(stack))
-                .withLabels(getLabels(stack))
+                .withName(configuration.getDeployment().getName(stack, orgId))
+                .withLabels(getLabels(stack, orgId))
                 .withAnnotations(onePasswordAnnotations())
                 .endMetadata()
                 .withNewSpec()
                 .withReplicas(configuration.getDeployment().getReplicas())
-                .withSelector(new LabelSelectorBuilder().withMatchLabels(getLabels(stack)).build())
+                .withSelector(new LabelSelectorBuilder().withMatchLabels(getLabels(stack, orgId)).build())
                 .withStrategy(getRollingUpdate())
                 .withNewTemplate()
                 .withNewMetadata()
-                .withLabels(getLabels(stack))
+                .withLabels(getLabels(stack, orgId))
                 .withAnnotations(prometheusAnnotations(path + "/prometheus"))
                 .endMetadata()
                 .withNewSpec()
                 .addNewContainer()
-                .withEnv(getConsumerEnvironmentVaribels(namespace, stack, path))
+                .withEnv(getConsumerEnvironmentVaribels(namespace, stack, path, orgId))
                 .withImage(image)
-                .withName(configuration.getDeployment().getName(stack))
+                .withName(configuration.getDeployment().getName(stack, orgId))
                 .withPorts(getContainerPorts())
                 .withNewReadinessProbe()
                 .withHttpGet(getHttpGetAction(path))
@@ -96,12 +96,14 @@ public class DeploymentRepository {
                 .build();
     }
 
-    private List<EnvVar> getConsumerEnvironmentVaribels(String namespace, String stack, String path) {
+    private List<EnvVar> getConsumerEnvironmentVaribels(String namespace, String stack, String path, String orgId) {
         List<EnvVar> envVars = new ArrayList<>() {{
             add(new EnvVarBuilder().withName("fint.hazelcast.kubernetes.enabled").withValue("true").build());
             add(new EnvVarBuilder().withName("fint.hazelcast.kubernetes.namespace").withValue(namespace).build());
             add(new EnvVarBuilder().withName("fint.hazelcast.kubernetes.labelName").withValue("fint.stack").build());
             add(new EnvVarBuilder().withName("fint.hazelcast.kubernetes.labelValue").withValue(stack).build());
+            add(new EnvVarBuilder().withName("fint.events.orgIds").withValue(orgId).build());
+            add(new EnvVarBuilder().withName("fint.consumer.dynamic-registration").withValue("false").build());
             add(new EnvVarBuilder().withName("server.context-path").withValue(path).build());
         }};
 
