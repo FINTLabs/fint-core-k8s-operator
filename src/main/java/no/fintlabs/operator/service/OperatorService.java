@@ -29,9 +29,9 @@ public class OperatorService {
 
     @PostConstruct
     public void init() {
+        namespaceRepository.applyNamespace("rogfk-no");
         configMapRepository.applyCoreEnvironmentConfig("rogfk-no");
         onePasswordOperatorRepository.updateOnePasswordOperator("rogfk-no");
-        namespaceRepository.applyNamespace("rogfk-no");
         serviceRepository.applyFintCoreConsumerService("rogfk-no", "administrasjon-personal");
         deploymentRepository.applyFintCoreConsumerDeployment(
                 "rogfk-no",

@@ -46,7 +46,7 @@ public class OnePasswordOperatorRepository {
 
     }
 
-    private String getUpdatedOnePasswordWatchNamespaces(Deployment deployment, String namespaceToAdd) {
+    public String getUpdatedOnePasswordWatchNamespaces(Deployment deployment, String namespaceToAdd) {
         List<String> watchNamespaces = deployment
                 .getSpec()
                 .getTemplate()

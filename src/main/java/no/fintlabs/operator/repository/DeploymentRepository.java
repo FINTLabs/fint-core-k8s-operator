@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-import static no.fintlabs.operator.repository.LabelHelper.getLabels;
+import static no.fintlabs.operator.repository.RepositoryHelper.getLabels;
 
 
 @Slf4j
@@ -45,7 +45,7 @@ public class DeploymentRepository {
                 .endMetadata()
                 .withNewSpec()
                 .addNewContainer()
-                .withEnv(getConsumerEnvironmentVaribels(namespace, stack, path))
+                .withEnv(getConsumerEnvironmentVaribels(namespace, stack, path, resourceSize))
                 .withImage(image)
                 .withName(configuration.getDeployment().getName(stack))
                 .withPorts(getContainerPorts())
@@ -96,13 +96,25 @@ public class DeploymentRepository {
                 .build();
     }
 
-    private List<EnvVar> getConsumerEnvironmentVaribels(String namespace, String stack, String path) {
+    private List<EnvVar> getConsumerEnvironmentVaribels(String namespace, String stack, String path, String resourceSize) {
         List<EnvVar> envVars = new ArrayList<>() {{
             add(new EnvVarBuilder().withName("fint.hazelcast.kubernetes.enabled").withValue("true").build());
             add(new EnvVarBuilder().withName("fint.hazelcast.kubernetes.namespace").withValue(namespace).build());
             add(new EnvVarBuilder().withName("fint.hazelcast.kubernetes.labelName").withValue("fint.stack").build());
             add(new EnvVarBuilder().withName("fint.hazelcast.kubernetes.labelValue").withValue(stack).build());
             add(new EnvVarBuilder().withName("server.context-path").withValue(path).build());
+            add(new EnvVarBuilder().withName("fint.consumer.dynamic-registration").withValue("false").build());
+            add(new EnvVarBuilder().withName("fint.events.orgIds").withValue(namespace.replace("_", ".")).build());
+            add(new EnvVarBuilder().withName("JAVA_TOOL_OPTIONS").withValue(
+                    String.format("-XX:+ExitOnOutOfMemoryError -XX:+UseG1GC -Xmx%sG -verbose:gc",
+                            RepositoryHelper.getXmx(configuration
+                                    .getDeployment()
+                                    .getResources()
+                                    .getLimit()
+                                    .get(resourceSize)
+                                    .get("limit"))
+                    )
+            ).build());
         }};
 
         configuration.getDeployment().getCacheDisabledFor()
@@ -116,6 +128,7 @@ public class DeploymentRepository {
 
         return envVars;
     }
+
 
     private Map<String, String> prometheusAnnotations(String path) {
         return new HashMap<>() {{

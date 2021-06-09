@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.operator.configuration.AppConfiguration;
 import org.springframework.stereotype.Repository;
 
-import static no.fintlabs.operator.repository.LabelHelper.getLabels;
+import static no.fintlabs.operator.repository.RepositoryHelper.getLabels;
 
 @Slf4j
 @Repository
@@ -26,7 +26,6 @@ public class ServiceRepository {
     public Service applyFintCoreConsumerService(String namespace, String stack) {
         Service service = new ServiceBuilder()
                 .withNewMetadata()
-                //.withAnnotations(Collections.singletonMap("service.beta.kubernetes.io/azure-load-balancer-internal", "true"))
                 .withLabels(getLabels(stack))
                 .withName(configuration.getService().getName(stack))
                 .endMetadata()
