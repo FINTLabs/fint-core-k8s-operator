@@ -1,22 +1,22 @@
 package no.fintlabs.operator.repository;
 
-import io.fabric8.kubernetes.api.model.Quantity;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class RepositoryHelper {
 
-    public static Map<String, String> getLabels(String stack) {
+    public static Map<String, String> getLabels(String orgId, String component) {
         return new HashMap<>() {{
-            put("fint.stack", stack);
+            put("fint.stack", component);
             put("fint.role", "consumer");
+            put("fint.org", orgId);
         }};
     }
 
-    public static String getXmx(Quantity limit) {
-        double memoryLimit = Double.parseDouble(limit.getAmount().replace("Gi", ""));
+    public static String getXmx(String limit) {
+        String unit = limit.replaceAll("\\d+", "").replace("i", "");
+        double memoryLimit = Double.parseDouble(limit.replaceAll("[a-zA-Z]+", ""));
 
-        return Long.toString(Math.round((memoryLimit * 0.9) - 0.5));
+        return String.format("%d%s", Math.round((memoryLimit * 0.5) - 0.5), unit);
     }
 }

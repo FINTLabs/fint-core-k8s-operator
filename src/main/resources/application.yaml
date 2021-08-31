@@ -1,6 +1,7 @@
 fint:
   kubernetes:
     api-server: "https://aks-sandbox-fint-f3e77925.hcp.norwayeast.azmk8s.io:443"
+    namespace: "default"
     deployment:
       name-template: ${fint.kubernetes.service.name-template}
       port: ${fint.kubernetes.service.port}
@@ -36,7 +37,6 @@ fint:
             memory: "15Gi"
             cpu: "2"
     service:
-      name-template: "consumer-%s"
+      name-template: "consumer-%s-%s"
       port: 8080
-    config-map:
-      url: "https://raw.githubusercontent.com/FINTLabs/fint-kubernetes/master/core/sandbox/environment.yaml"
+

@@ -10,7 +10,7 @@ public class RestClient {
     public WebClient webClient() {
         return WebClient
                 .builder()
-                .baseUrl("http://localhost:8081/api/components/")
+                .baseUrl("http://localhost:8081/api/k8s/deployments")
                 .build();
     }
 }

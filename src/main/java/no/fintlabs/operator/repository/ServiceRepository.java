@@ -23,20 +23,20 @@ public class ServiceRepository {
         this.configuration = configuration;
     }
 
-    public Service applyFintCoreConsumerService(String namespace, String stack) {
+    public void applyFintCoreConsumerService(String orgId, String component) {
         Service service = new ServiceBuilder()
                 .withNewMetadata()
-                .withLabels(getLabels(stack))
-                .withName(configuration.getService().getName(stack))
+                .withLabels(getLabels(orgId, component))
+                .withName(configuration.getDeployment().getName(orgId, component))
                 .endMetadata()
                 .withNewSpec()
                 .withType("ClusterIP")
                 .withPorts(servicePort())
-                .withSelector(getLabels(stack))
+                .withSelector(getLabels(orgId, component))
                 .endSpec()
                 .build();
 
-        return client.services().inNamespace(namespace).createOrReplace(service);
+        client.services().inNamespace(configuration.getNamespace()).createOrReplace(service);
     }
 
     private ServicePort servicePort() {

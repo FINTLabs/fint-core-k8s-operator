@@ -1,45 +1,52 @@
 package no.fintlabs.operator.service;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.extern.slf4j.Slf4j;
-import no.fintlabs.operator.repository.*;
+import no.fintlabs.operator.model.K8sDeploymentModel;
+import no.fintlabs.operator.repository.DeploymentRepository;
+import no.fintlabs.operator.repository.ServiceRepository;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
 public class OperatorService {
 
-    private final KubernetesClient kubernetesClient;
-    private final NamespaceRepository namespaceRepository;
-    private final OnePasswordOperatorRepository onePasswordOperatorRepository;
-    private final ConfigMapRepository configMapRepository;
     private final DeploymentRepository deploymentRepository;
     private final ServiceRepository serviceRepository;
+    private final WebClient webClient;
 
-    public OperatorService(KubernetesClient kubernetesClient, NamespaceRepository namespaceRepository, OnePasswordOperatorRepository onePasswordOperatorRepository, ConfigMapRepository configMapRepository, DeploymentRepository deploymentRepository, ServiceRepository serviceRepository) {
-        this.kubernetesClient = kubernetesClient;
-        this.namespaceRepository = namespaceRepository;
-        this.onePasswordOperatorRepository = onePasswordOperatorRepository;
-        this.configMapRepository = configMapRepository;
+    public OperatorService(DeploymentRepository deploymentRepository, ServiceRepository serviceRepository, WebClient webClient) {
         this.deploymentRepository = deploymentRepository;
         this.serviceRepository = serviceRepository;
+        this.webClient = webClient;
     }
 
     @PostConstruct
     public void init() {
-        namespaceRepository.applyNamespace("rogfk-no");
-        configMapRepository.applyCoreEnvironmentConfig("rogfk-no");
-        onePasswordOperatorRepository.updateOnePasswordOperator("rogfk-no");
-        serviceRepository.applyFintCoreConsumerService("rogfk-no", "administrasjon-personal");
-        deploymentRepository.applyFintCoreConsumerDeployment(
-                "rogfk-no",
-                "administrasjon-personal",
-                "small",
-                "/administrasjon/personal",
-                "fintlabsacr.azurecr.io/consumer-administrasjon-personal:3.8.0"
-        );
+        updateDeployments();
+    }
+
+    public void updateDeployments() {
+        Objects.requireNonNull(webClient.get()
+                        .retrieve()
+                        .bodyToMono(new ParameterizedTypeReference<List<K8sDeploymentModel>>() {
+                        })
+                        .block())
+                .forEach(organisation -> organisation.getComponents()
+                        .forEach(deployment -> {
+                            serviceRepository.applyFintCoreConsumerService(organisation.getOrgId(), deployment.getComponentName());
+                            if (deployment.getComponentImage() != null) {
+                                deploymentRepository.applyFintCoreConsumerDeployment(
+                                        organisation.getOrgId(),
+                                        deployment
+                                );
+                            }
+                        }));
     }
 
 
