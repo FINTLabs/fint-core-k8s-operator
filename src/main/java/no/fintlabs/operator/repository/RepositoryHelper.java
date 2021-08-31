@@ -3,26 +3,28 @@ package no.fintlabs.operator.repository;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RepositoryHelper {
 
+    public static final BigDecimal SIZE_256_MB = new BigDecimal("268435456");
+    public static final BigDecimal SIZE_1_MB = new BigDecimal("1048576");
+
     public static Map<String, String> getLabels(String orgId, String component) {
-        return new HashMap<>() {{
-            put("fint.stack", component);
-            put("fint.role", "consumer");
-            put("fint.org", orgId);
-        }};
+        return Map.of(
+                "fint.stack", component,
+                "fint.role", "consumer",
+                "fint.org", orgId,
+                "fint.source", "auto");
     }
 
     public static String getXmx(String limit) {
         return parseSize(limit)
                 .multiply(new BigDecimal("0.9"))
-                .subtract(new BigDecimal("268435456"))
-                .divide(new BigDecimal("1048576"), RoundingMode.HALF_UP)
+                .subtract(SIZE_256_MB)
+                .divide(SIZE_1_MB, RoundingMode.HALF_UP)
                 .toBigInteger() + "M";
     }
 
