@@ -5,7 +5,6 @@ import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 import io.fabric8.kubernetes.api.model.apps.DeploymentStrategy;
 import io.fabric8.kubernetes.api.model.apps.DeploymentStrategyBuilder;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.extern.slf4j.Slf4j;
 import no.fintlabs.operator.configuration.AppConfiguration;
 import no.fintlabs.operator.model.ComponentSizes;
@@ -21,16 +20,14 @@ import static no.fintlabs.operator.repository.RepositoryHelper.getLabels;
 @Repository
 public class DeploymentRepository {
 
-    private final KubernetesClient client;
     private final AppConfiguration configuration;
 
-    public DeploymentRepository(KubernetesClient client, AppConfiguration configuration) {
-        this.client = client;
+    public DeploymentRepository(AppConfiguration configuration) {
         this.configuration = configuration;
     }
 
-    public void applyFintCoreConsumerDeployment(String orgId, K8sComponentModel component /*String stack, ComponentSizes.Size resourceSize, String path, String image*/) {
-        Deployment deployment = new DeploymentBuilder()
+    public Deployment createFintCoreConsumerDeployment(String orgId, K8sComponentModel component /*String stack, ComponentSizes.Size resourceSize, String path, String image*/) {
+        return new DeploymentBuilder()
                 .withNewMetadata()
                 .withName(configuration.getDeployment().getName(orgId, component.getComponentName()))
                 .withLabels(getLabels(component.getComponentName(), orgId))
@@ -74,7 +71,7 @@ public class DeploymentRepository {
                 .and()
                 .build();
 
-        client.apps().deployments().inNamespace(configuration.getNamespace()).createOrReplace(deployment);
+        //client.apps().deployments().inNamespace(configuration.getNamespace()).createOrReplace(deployment);
     }
 
     private HTTPGetAction getHttpGetAction(String path) {
