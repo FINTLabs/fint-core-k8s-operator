@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 
 import static no.fintlabs.operator.repository.RepositoryHelper.getLabels;
+import static no.fintlabs.operator.repository.RepositoryHelper.getSelectors;
 
 
 @Slf4j
@@ -35,7 +36,7 @@ public class DeploymentRepository {
                 .endMetadata()
                 .withNewSpec()
                 .withReplicas(configuration.getDeployment().getReplicas())
-                .withSelector(new LabelSelectorBuilder().withMatchLabels(getLabels(orgId, component.getComponentName())).build())
+                .withSelector(new LabelSelectorBuilder().withMatchLabels(getSelectors(orgId, component.getComponentName())).build())
                 .withStrategy(getRollingUpdate())
                 .withNewTemplate()
                 .withNewMetadata()

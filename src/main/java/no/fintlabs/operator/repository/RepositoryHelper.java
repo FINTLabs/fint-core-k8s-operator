@@ -6,6 +6,12 @@ import java.util.Map;
 public class RepositoryHelper {
 
     public static Map<String, String> getLabels(String orgId, String component) {
+        Map<String, String> selectors = getSelectors(orgId, component);
+        selectors.put("fint.created-by", "fint-core-k8s-operator");
+        return selectors;
+    }
+
+    public static Map<String, String> getSelectors(String orgId, String component) {
         return new HashMap<>() {{
             put("fint.stack", component);
             put("fint.role", "consumer");

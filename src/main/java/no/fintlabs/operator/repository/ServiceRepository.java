@@ -9,6 +9,7 @@ import no.fintlabs.operator.configuration.AppConfiguration;
 import org.springframework.stereotype.Repository;
 
 import static no.fintlabs.operator.repository.RepositoryHelper.getLabels;
+import static no.fintlabs.operator.repository.RepositoryHelper.getSelectors;
 
 @Slf4j
 @Repository
@@ -29,7 +30,7 @@ public class ServiceRepository {
                 .withNewSpec()
                 .withType("ClusterIP")
                 .withPorts(servicePort())
-                .withSelector(getLabels(orgId, component))
+                .withSelector(getSelectors(orgId, component))
                 .endSpec()
                 .build();
 
