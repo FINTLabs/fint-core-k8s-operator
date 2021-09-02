@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -32,12 +31,11 @@ public class OperatorService {
         this.configuration = configuration;
     }
 
-//    @PostConstruct
-//    public void init() {
-//        updateConsumers();
-//    }
 
-    @Scheduled(fixedRateString = "${fint.kubernetes.operator.fixed-rate:30000}", initialDelayString = "${fint.kubernetes.operator.initial-delay:30000}")
+    @Scheduled(
+            fixedRateString = "${fint.kubernetes.operator.schedule.fixed-rate:30000}",
+            initialDelayString = "${fint.kubernetes.operator.schedule.initial-delay:30000}"
+    )
     public void refreshConsumers() {
         updateConsumers();
     }
@@ -72,7 +70,7 @@ public class OperatorService {
                 .map(FintConsumerDefinition::getDeployment)
                 .forEach(deployment -> {
                     log.info("-> Updating {}", deployment.getMetadata().getName());
-                    client.apps().deployments().inNamespace(configuration.getNamespace()).createOrReplace(deployment);
+                    client.apps().deployments().inNamespace(configuration.getDefaultNamespace()).createOrReplace(deployment);
                 });
     }
 
@@ -83,13 +81,13 @@ public class OperatorService {
                 .map(FintConsumerDefinition::getService)
                 .forEach(service -> {
                     log.info("-> Updating {}", service.getMetadata().getName());
-                    client.services().inNamespace(configuration.getNamespace()).createOrReplace(service);
+                    client.services().inNamespace(configuration.getDefaultNamespace()).createOrReplace(service);
                 });
     }
 
     private void deleteUnusedDeployments(List<FintConsumerDefinition> fintConsumers) {
         client.apps().deployments().delete(client.apps().deployments()
-                .inNamespace(configuration.getNamespace())
+                .inNamespace(configuration.getDefaultNamespace())
                 .withLabels(Collections.singletonMap("fint.created-by", "fint-core-k8s-operator"))
                 .list()
                 .getItems()
@@ -101,7 +99,7 @@ public class OperatorService {
 
     private void deleteUnusedServices(List<FintConsumerDefinition> fintConsumers) {
         client.services().delete(client.services()
-                .inNamespace(configuration.getNamespace())
+                .inNamespace(configuration.getDefaultNamespace())
                 .withLabels(Collections.singletonMap("fint.created-by", "fint-core-k8s-operator"))
                 .list()
                 .getItems()

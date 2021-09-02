@@ -11,7 +11,8 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "fint.kubernetes")
 public class AppConfiguration {
     private String apiServer;
-    private String namespace;
+    private String defaultNamespace;
+    private String deploymentSourceUri;
     private DeploymentConfiguration deployment;
     private ServiceConfiguration service;
 }

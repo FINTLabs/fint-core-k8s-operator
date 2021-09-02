@@ -4,40 +4,41 @@ fint:
   kubernetes:
     api-server: "https://aks-sandbox-fint-f3e77925.hcp.norwayeast.azmk8s.io:443"
     namespace: "default"
+    deployment-source-uri: "http://localhost:8081/api/k8s/deployments"
     deployment:
       name-template: ${fint.kubernetes.service.name-template}
       port: ${fint.kubernetes.service.port}
       onepassword-vault: aks-sandbox-vault
       secret: fint-events-azure-eventhub
-      cache-disabled-for:
-        - person
-        - nisse
-        - bil
+#      cache-disabled-for:
+#        - person
+#        - nisse
+#        - bil
       deployment-strategy:
         max-surge: 1
         max-unavailable: 0
       replicas: 1
-      resources:
-        request:
-          small:
-            memory: "2Gi"
-            cpu: "250m"
-          medium:
-            memory: "5Gi"
-            cpu: "500m"
-          large:
-            memory: "10Gi"
-            cpu: "1"
-        limit:
-          small:
-            memory: "4Gi"
-            cpu: "1"
-          medium:
-            memory: "10Gi"
-            cpu: "2"
-          large:
-            memory: "15Gi"
-            cpu: "2"
+#      resources:
+#        request:
+#          small:
+#            memory: "2Gi"
+#            cpu: "250m"
+#          medium:
+#            memory: "5Gi"
+#            cpu: "500m"
+#          large:
+#            memory: "10Gi"
+#            cpu: "1"
+#        limit:
+#          small:
+#            memory: "4Gi"
+#            cpu: "1"
+#          medium:
+#            memory: "10Gi"
+#            cpu: "2"
+#          large:
+#            memory: "15Gi"
+#            cpu: "2"
     service:
       name-template: "consumer-%s-%s"
       port: 8080
