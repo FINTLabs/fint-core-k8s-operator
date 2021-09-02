@@ -1,3 +1,5 @@
+server:
+  port: 8082
 fint:
   kubernetes:
     api-server: "https://aks-sandbox-fint-f3e77925.hcp.norwayeast.azmk8s.io:443"
