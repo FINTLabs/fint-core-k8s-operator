@@ -1,5 +1,5 @@
 
-package no.fintlabs.operator.model;
+package no.fintlabs.operator.repository.model;
 
 import java.util.List;
 

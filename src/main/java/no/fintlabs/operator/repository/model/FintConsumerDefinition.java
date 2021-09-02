@@ -1,4 +1,4 @@
-package no.fintlabs.operator.model;
+package no.fintlabs.operator.repository.model;
 
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.Deployment;

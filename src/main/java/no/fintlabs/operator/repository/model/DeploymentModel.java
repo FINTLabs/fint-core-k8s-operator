@@ -1,4 +1,4 @@
-package no.fintlabs.operator.model;
+package no.fintlabs.operator.repository.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,8 +12,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class K8sDeploymentModel {
+public class DeploymentModel {
     private String orgId;
     @Builder.Default
-    private List<K8sComponentModel> components = new ArrayList<>();
+    private List<ComponentModel> components = new ArrayList<>();
 }

@@ -3,8 +3,8 @@ package no.fintlabs.operator.service;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import no.fintlabs.operator.configuration.AppConfiguration;
-import no.fintlabs.operator.model.FintConsumerDefinition;
-import no.fintlabs.operator.model.K8sDeploymentModel;
+import no.fintlabs.operator.repository.model.FintConsumerDefinition;
+import no.fintlabs.operator.repository.model.DeploymentModel;
 import no.fintlabs.operator.repository.DeploymentRepository;
 import no.fintlabs.operator.repository.ServiceRepository;
 import org.springframework.util.StringUtils;
@@ -25,7 +25,7 @@ public class FintConsumerService {
         this.configuration = configuration;
     }
 
-    public Stream<FintConsumerDefinition> createFintConsumers(K8sDeploymentModel deploymentModel) {
+    public Stream<FintConsumerDefinition> createFintConsumers(DeploymentModel deploymentModel) {
         return deploymentModel
                 .getComponents()
                 .stream()

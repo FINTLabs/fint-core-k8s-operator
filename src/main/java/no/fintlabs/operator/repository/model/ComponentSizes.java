@@ -1,4 +1,4 @@
-package no.fintlabs.operator.model;
+package no.fintlabs.operator.repository.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
