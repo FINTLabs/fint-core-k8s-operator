@@ -37,7 +37,7 @@ public class OperatorService {
 //        updateConsumers();
 //    }
 
-    @Scheduled(fixedRate = 30000L, initialDelayString = "${}")
+    @Scheduled(fixedRateString = "${fint.kubernetes.operator.fixed-rate:30000}", initialDelayString = "${fint.kubernetes.operator.initial-delay:30000}")
     public void refreshConsumers() {
         updateConsumers();
     }
