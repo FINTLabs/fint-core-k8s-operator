@@ -9,5 +9,15 @@
       "name": "fint.garden-gnome.cache-disabled-for",
       "type": "java.lang.String",
       "description": "Description for fint.garden-gnome.cache-disabled-for."
+    },
+    {
+      "name": "fint.kubernetes.deployment-source-uri",
+      "type": "java.lang.String",
+      "description": "Description for fint.kubernetes.deployment-source-uri."
+    },
+    {
+      "name": "fint.kubernetes.deployment.name-template",
+      "type": "java.lang.String",
+      "description": "Description for fint.kubernetes.deployment.name-template."
     }
   ] }

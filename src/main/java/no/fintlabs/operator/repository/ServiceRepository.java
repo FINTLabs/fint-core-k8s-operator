@@ -33,8 +33,6 @@ public class ServiceRepository {
                 .withSelector(getSelectors(orgId, component))
                 .endSpec()
                 .build();
-
-        //client.services().inNamespace(configuration.getNamespace()).createOrReplace(service);
     }
 
     private ServicePort servicePort() {
