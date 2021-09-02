@@ -13,11 +13,17 @@ public class RepositoryHelper {
     public static final BigDecimal SIZE_1_MB = new BigDecimal("1048576");
 
     public static Map<String, String> getLabels(String orgId, String component) {
-        return Map.of(
-                "fint.stack", component,
-                "fint.role", "consumer",
-                "fint.org", orgId,
-                "fint.source", "auto");
+        Map<String, String> selectors = getSelectors(orgId, component);
+        selectors.put("fint.created-by", "fint-core-k8s-operator");
+        return selectors;
+    }
+
+    public static Map<String, String> getSelectors(String orgId, String component) {
+        return new HashMap<>() {{
+            put("fint.stack", component);
+            put("fint.role", "consumer");
+            put("fint.org", orgId);
+        }};
     }
 
     public static String getXmx(String limit) {

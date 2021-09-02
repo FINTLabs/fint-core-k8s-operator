@@ -1,5 +1,6 @@
 package no.fintlabs.operator.controller;
 
+import io.fabric8.kubernetes.api.model.ServiceStatus;
 import io.fabric8.kubernetes.api.model.apps.DeploymentStatus;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,16 @@ public class StatusController {
         return kubernetesClient
                 .apps()
                 .deployments()
+                .inNamespace("default")
+                .withName(name)
+                .get()
+                .getStatus();
+    }
+
+    @GetMapping("service/{name}")
+    public ServiceStatus getServiceStatus(@PathVariable final String name) {
+        return kubernetesClient
+                .services()
                 .inNamespace("default")
                 .withName(name)
                 .get()
